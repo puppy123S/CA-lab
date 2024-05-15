@@ -1,0 +1,503 @@
+    From start to 420 8085
+    From 422 to last 8086
+8085 Programs
+Addition of two nos 
+
+1. Write an assembly language program to add two 8 bit numbers stored at address 2050 and address 2051 in 8085 microprocessor. The starting address of the program is taken as 2000.(with carry)
+
+LDA 2050H
+MOV H, A
+LDA 2051H
+ADD H
+MOV L,A
+MVI A,00
+ADC A
+MOV H,A
+SHLD 2050H
+HLT
+
+
+
+Write an assembly language program to sum two 8 bit numbers without using carry operation in 8085 microprocessor.
+
+LDA 0050H
+MOV B, A
+LDA 0051H
+ADD B
+STA 0052H
+HLT
+
+
+Write a program to subtract two 8-bit numbers with or without borrow where first number is at 2500 memory address and second number is at 2501 memory address and store the result into 2502 and borrow into 2503 memory address.
+
+Without borrow:
+LDA 0050H
+MOV H, A
+LDA 0051H
+SUB H
+STA 0052H
+RST 1
+HLT
+
+With borrow:
+LDA 0050H
+MOV H, A
+LDA 0051H
+SUB H
+MOV L,A
+MVI A,00h
+SBB A
+MOV H,A
+SHLD 0055H
+HLT
+
+Multiplication of 8-bit
+
+LDA 8500h
+MOV B, A
+LDA 8501h
+MOV C, A
+XRA A 
+LOOP: ADD B
+DCR C
+JNZ LOOP
+STA 8502h
+RST 1      
+HLT
+
+Division of 8-bit 
+
+LDA 8501h
+MOV B, A
+LDA 8500h
+MVI C,00
+LOOP: CMP B
+JC LOOP1
+SUB B
+INR C
+JMP LOOP
+LOOP1: STA 8502h
+MOV A, C
+STA 8502h
+RST 1
+HLT
+
+
+9. Write an assembly language program to find the Greatest of 2 numbers. 
+Input : 2050 - 3
+	2051 - 15
+Output: 2052 -15
+
+LDA 2050H
+MOV B,A
+LDA 2051H
+CMP B
+JNC STORE
+MOV A,B
+STORE: STA 2052H
+HLT
+
+
+10. Write an assembly language program to find the Smallest of 2 numbers. 
+Input : 2050 - 3
+	2051 - 15
+Output: 2052 -3
+
+LDA 2050H
+MOV B,A
+LDA 2051H
+CMP B
+JNC STORE
+
+STORE: MOV A,B
+STA 2052H
+HLT
+
+11. Write an assembly language program to find the LCM of 2 numbers. 
+Input : 8000 - 3
+	8001 - 15
+Output: 8050 -15
+LXI H, 8000H   	
+MOV C, M	
+MVI B, 00H  	
+INX H   	
+MOV A, M	
+CMA		
+MOV E, A	
+;MVI D, FFH  	
+MOV A,B
+CMA
+MOV D,A
+INX D   		
+LXI H, 0000H   	
+NEXT: DAD B   		
+SHLD 8050H  	
+LOOP: DAD D   	
+JNC SKIP    	
+MOV A, H	
+ORA L   		
+JZ EXIT		
+JMP LOOP    	
+SKIP: LHLD 8050H  	
+JMP NEXT    	
+EXIT: LHLD 8050H  	
+HLT
+12. Write an assembly language program to find the GCD of 2 numbers. 
+Input : 8000 - 3
+	8001 - 15
+Output: 8050 -3
+
+LXI H,8000H	
+MOV A, M	
+INX H   	
+MOV B, M	
+LOOP: CMP B   	
+JZ STORE    		
+JC EXG   	
+SUB B   		
+JMP LOOP  	
+EXG: MOV C,B	
+MOV B, A	
+MOV A, C		
+JMP LOOP    	
+STORE: STA 8050H   	
+HLT
+13. Write an assembly language program to arrange numbers in Ascending order. 
+Input: 3500 - 5
+	3501 - 2
+	3502 - 4
+	3503 - 7
+	3504 - 8
+	3505 - 1
+	3506 - 3
+Output: 3500 to 3506 - sorted nos
+LOOP: LXI H,3500H
+MVI D,00
+MVI C,05
+LOOP1: MOV A,M
+INX H
+CMP M
+JC LOOP2
+MOV B,M
+MOV M,A
+DCX H
+MOV M,B
+INX H
+MVI D,01
+LOOP2: DCR C
+JNZ LOOP1
+MOV A,D
+RRC 
+JC LOOP
+HLT
+14. Write a program to convert Decimal number to Hexadecimal number 
+
+15. Write a program to convert Binary to Octal number 
+19. Write an assembly language program to find factorial of the given number. 
+Input : 8000 - 4
+Output : 8001 - 24
+
+LXI H, 8000H
+MOV B,M
+MVI D, 01H
+FACT: CALL MUL
+DCR B
+JNZ FACT
+INX H
+MOV M,D
+HLT
+MUL: MOV E,B
+XRA A
+ML: ADD D
+DCR E
+JNZ ML
+MOV D,A
+RET
+HLT
+
+20. Write an assembly language program to find the largest number in an array. 
+Input: 8000 - 5
+	8001 - 2
+	8002 - 4
+	8003 - 7
+	8004 - 8
+	8005 - 1
+	8006 - 3
+Output: 8200 - largest no
+
+LXI H,8000H
+MOV C, M
+INX H
+MOV B, M
+DCR C
+LOOP: INX H
+MOV A, M
+CMP B
+JC SKIP
+MOV B, A
+SKIP: DCR C
+JNZ LOOP
+LXI H,8200H
+MOV M, B
+HLT
+21. Write a program to convert Decimal to Hexadecimal number
+Input 802B-52  output 802C-34
+LXI SP,80FFH
+LXI H, 802BH
+LXI B, 802CH
+MOV A, M
+CALL BCDBIN
+STAX B
+HLT
+BCDBIN: PUSH B
+MOV B, A
+ANI 0FH
+MOV C, A
+MOV A, B
+ANI 0F0H
+RRC
+RRC
+RRC
+RRC
+MOV D, A
+XRA A
+MVI E, 0AH
+SUM: ADD E
+DCR D
+JNZ SUM
+ADD C
+POP B
+RET
+22. Write an assembly language program to find the given 8-bit number is Prime or not using 8085 processor. 
+Input : 8100 - 5
+Output : 8101 - 2
+
+LXI H,8100H
+MOV A,M
+MVI C,00
+MOV D,A
+MOV E,A
+L2: MOV B,D
+L1: CMP B
+JC LABEL
+SUB B
+JNZ L1
+LABEL: CPI 00
+JNZ SKIP
+INR C
+SKIP: MOV A,E
+DCR D
+JNZ L2
+MOV A,C
+STA 8101H
+HLT
+23. Write an assembly language program to find the given 8-bit number is Odd or Even using 8085 processor. 
+Input : 2050 - 4
+Output : 2051 - 22
+
+LDA 2050H
+ANI 01
+JZ LOOP1
+MVI A,11
+JMP LOOP2
+LOOP1: MVI A,22
+LOOP2: STA 2051H
+HLT
+24. Write an assembly language program to find the given 8-bit number is Positive or Negative using 8085 processor.
+Output : 2501 - 22
+
+MVI A,9AH
+ANI 80H
+JZ NEG
+MVI A,22
+JMP STO
+NEG: MVI A,11
+STO: STA 2501H
+HLT
+25. Write an assembly language program to find the Minimum number in an array. 
+Input: 8000 - 5
+	8001 - 2
+	8002 - 4
+	8003 - 7
+	8004 - 8
+	8005 - 1
+	8006 - 3
+Output: 8200 -smallest no
+
+LXI H,8000H
+MOV C, M
+INX H
+MOV B, M
+DCR C
+LOOP: INX H
+MOV A, M
+CMP B
+JNC SKIP
+MOV B, A
+SKIP: DCR C
+JNZ LOOP
+LXI H,8200H
+MOV M, B
+HLT
+26. Write an assembly language program to find 1’s complement of 8-bit number. 
+Input : 8000 - 4
+Output : 8050 - 1’s complement of 4
+LDA 8000H
+CMA
+STA 8050H
+HLT
+27. Write an assembly language program to find 2’s complement of 8-bit number. 
+Input : 8000 - 4
+Output : 8051 - 2’s complement of 4
+LDA 8000H
+CMA
+STA 8050H
+INR A
+STA 8051H
+HLT
+28. Write an assembly language program to arrange numbers in Descending order. 
+Input: 3500 - 5
+	3501 - 2
+	3502 - 4
+	3503 - 7
+	3504 - 8
+	3505 - 1
+	3506 - 3
+Output: 3500 to 3506 - sorted nos
+
+LOOP: LXI H,3500H
+MVI D,00
+MVI C,05
+LOOP1: MOV A,M
+INX H
+CMP M
+JNC LOOP2
+MOV B,M
+MOV M,A
+DCX H
+MOV M,B
+INX H
+MVI D,01
+LOOP2: DCR C
+JNZ LOOP1
+MOV A,D
+RRC 
+JC LOOP
+HLT
+
+
+28. Write an assembly language program to Logical AND Operation
+
+MVI A, 15
+MVI B, 7
+ANA B
+STA 2500
+HLT
+
+28. Write an assembly language program to Logical OR Operation
+
+MVI A, 8
+MVI B, 7
+ORA B
+STA 2500
+HLT
+
+28. Write an assembly language program to Exclusive OR Operation
+
+MVI A, 7
+MVI B, 6
+XRA B
+STA 2500
+HLT
+
+28. Write an assembly language program to  ROTATE LEFT OPERATION
+
+MVI A, 04
+RLC 
+RLC
+RLC
+RLC
+STA 2000
+HLT
+
+
+28. Write an assembly language program to convert hexadecimal to Decimal(BCD)
+
+Input 8000-34 output 8050-52
+LXI H,8000H	
+MVI D,00H	
+XRA A		
+MOV C, M	
+LOOP: ADI 01H	
+DAA		
+JNC SKIP	
+INR D	
+SKIP: DCR C		
+JNZ LOOP	
+MOV L, A	
+MOV H, D		
+SHLD 8050H	
+HLT
+
+
+    8086
+
+1. Load immediate value into register:
+   ```assembly
+   MOV AX, 1234H
+   ```
+
+2. Add two numbers:
+   ```assembly
+   MOV AX, 10H
+   ADD AX, 20H
+   ```
+
+3. Subtract two numbers:
+   ```assembly
+   MOV AX, 30H
+   SUB AX, 10H
+   ```
+
+4. Multiply two numbers:
+   ```assembly
+   MOV AX, 5
+   MOV BX, 6
+   MUL BX
+   ```
+
+5. Divide two numbers:
+   ```assembly
+   MOV AX, 30H
+   MOV BL, 5
+   DIV BL
+   ```
+
+6. 16-bit subtraction in 8086 assembly:
+
+```assembly
+MOV AX, 5678H
+MOV BX, 1234H
+SUB AX, BX
+```
+.
+7. 8086 assembly code for 16-bit multiplication:
+
+```assembly
+MOV AX, 1234H   
+MOV BX, 5678H   
+MUL BX 
+
+8.  8086 assembly code for 16-bit division:
+
+```assembly
+MOV AX, 5678H    
+MOV BX, 1234H  
+DIV BX 
+
+9. 16 bit addition 
+
+MOV AX, 1234H
+MOV BX, 5678H
+ADD AX, BX
+               
